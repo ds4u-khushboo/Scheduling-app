@@ -1,0 +1,4 @@
+John Doe,Urgent Care
+Jane Smith,Urgent Care
+Michael Johnson,Primary Care
+Emily Davis,Primary Care

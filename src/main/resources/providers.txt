@@ -1,0 +1,6 @@
+1275534000,Dr. Rajan Gulati,Urgent Care
+1275534000,Dr. Rajan Gulati,Urgent Care
+1275534000,Dr. Rajan Gulati,Primary Care
+1275534000,Dr. Rajan Gulati,Primary Care
+1275534000,Dr. Rajan Gulati,pediatrics
+1275534000,Dr. Rajan Gulati,pediatrics
