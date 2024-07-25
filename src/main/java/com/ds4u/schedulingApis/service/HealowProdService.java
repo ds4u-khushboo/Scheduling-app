@@ -6,6 +6,8 @@ import com.ds4u.schedulingApis.exception.CustomException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -148,6 +150,8 @@ public class HealowProdService {
             }
             String slotResponseBody = slotResponse.body().string();
 
+
+            //return updatedResponseBody;
             return objectMapper.readTree(slotResponseBody);
         }
     }

@@ -1,19 +1,21 @@
 package com.ds4u.schedulingApis.service;
 
 import com.ds4u.schedulingApis.configuration.ApiDevConfig;
+import com.ds4u.schedulingApis.configuration.ApiLiveConfig;
 import com.ds4u.schedulingApis.entity.BookingInfo;
 import com.ds4u.schedulingApis.exception.CustomException;
 import com.ds4u.schedulingApis.respository.BookingInfoRespository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -24,14 +26,9 @@ public class HealowDevService {
 
     @Autowired
     private ApiDevConfig apiDevConfig;
-
     @Autowired
     private BookingInfoRespository bookingInfoRespository;
 
-    //    @Bean
-//    public ApiDevConfig getApiConfig(){
-//        return new ApiDevConfig();
-//    }
     private OkHttpClient client = new OkHttpClient.Builder().build();
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -57,6 +54,7 @@ public class HealowDevService {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected code " + response);
             }
+
             return response.body().string();
         } catch (IOException e) {
             // Log the specific exception details
@@ -80,7 +78,7 @@ public class HealowDevService {
         Request request = new Request.Builder()
                 .url(sloturl)
                 .get()
-                .addHeader("Authorization", apiDevConfig.getDevBearerToekn())
+                .addHeader("Authorization", "Bearer "+apiDevConfig.getDevBearerToekn())
                 //.addHeader("Cookie", "JSESSIONID=78C5A71D81FA9FF3F943D799C9923F0F; ApplicationGatewayAffinity=cef1f429a0207a8fd583686fb86a5ca3; ApplicationGatewayAffinityCORS=cef1f429a0207a8fd583686fb86a5ca3; SERVERID=app02_8003")
                 .build();
         System.out.println("request--" + request);
@@ -91,8 +89,50 @@ public class HealowDevService {
 
             System.out.println("response--" + response);
             String responseBody = response.body().string();
-            System.out.println("responseBody____" + responseBody);
-            return responseBody;
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode originalResponse = mapper.readTree(responseBody);
+
+            // Check if there are existing entries
+            ArrayNode entries;
+            if (originalResponse.has("entry")) {
+                entries = (ArrayNode) originalResponse.get("entry");
+            } else {
+                entries = mapper.createArrayNode();
+            }
+
+            // Create the new entry
+            ObjectNode newEntry = mapper.createObjectNode();
+            newEntry.put("fullUrl", "http://connect4.healow.com/apps/api/v1/fhir/BEHDAD/fhir/Schedule/c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
+
+            ObjectNode resource = mapper.createObjectNode();
+            resource.put("resourceType", "Schedule");
+            resource.put("id", "c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
+
+            ObjectNode actor = mapper.createObjectNode();
+            actor.put("reference", "1275534000");
+
+            resource.set("actor", actor);
+
+            ObjectNode planningHorizon = mapper.createObjectNode();
+            planningHorizon.put("start", "2024-07-26T00:00:00-04:00");
+            planningHorizon.put("end", "2024-07-26T00:00:00-04:00");
+
+            resource.set("planningHorizon", planningHorizon);
+
+            newEntry.set("resource", resource);
+
+            // Add the new entry to the entries array
+            entries.add(newEntry);
+
+            // Update the original response with the new entries array and the other required fields
+            ((ObjectNode) originalResponse).set("entry", entries);
+            ((ObjectNode) originalResponse).put("total", entries.size());
+
+            // Return the updated response as a string
+            String updatedResponseBody = mapper.writeValueAsString(originalResponse);
+            System.out.println(updatedResponseBody);
+            return updatedResponseBody;
+//            return responseBody;
 
         } catch (IOException e) {
             System.err.println("IOException while executing FHIR request:");
@@ -154,8 +194,49 @@ public class HealowDevService {
                 throw new IOException("Unexpected code " + slotResponse + " with body " + slotResponse.body().string());
             }
             String slotResponseBody = slotResponse.body().string();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode originalResponse = mapper.readTree(slotResponseBody);
 
-            return objectMapper.readTree(slotResponseBody);
+            ArrayNode entries;
+            if (originalResponse.has("entry")) {
+                entries = (ArrayNode) originalResponse.get("entry");
+            } else {
+                entries = mapper.createArrayNode();
+            }
+
+            // Create the new entry
+            ObjectNode newEntry = mapper.createObjectNode();
+            newEntry.put("fullUrl", "http://connect4.healow.com/apps/api/v1/fhir/BEHDAD/fhir/Schedule/c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
+
+            ObjectNode resource = mapper.createObjectNode();
+            resource.put("resourceType", "Schedule");
+            resource.put("id", "c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
+
+            ObjectNode actors = mapper.createObjectNode();
+            actors.put("reference", "1275534000");
+
+            resource.set("actor", actors);
+
+            ObjectNode planningHorizon = mapper.createObjectNode();
+            planningHorizon.put("start", "2024-07-26T00:00:00-04:00");
+            planningHorizon.put("end", "2024-07-26T00:00:00-04:00");
+
+            resource.set("planningHorizon", planningHorizon);
+
+            newEntry.set("resource", resource);
+
+            // Add the new entry to the entries array
+            entries.add(newEntry);
+
+            // Update the original response with the new entries array and the other required fields
+            ((ObjectNode) originalResponse).set("entry", entries);
+            ((ObjectNode) originalResponse).put("total", entries.size());
+
+            // Return the updated response as a string
+            String updatedResponseBody = mapper.writeValueAsString(originalResponse);
+            System.out.println(updatedResponseBody);
+            //return updatedResponseBody;
+            return objectMapper.readTree(updatedResponseBody);
         }
     }
 
@@ -251,7 +332,19 @@ public class HealowDevService {
             return "booked";
         } else {
             // Handle error response
-            System.err.println("Error response: " + conn.getResponseMessage());
+            InputStream errorStream = conn.getErrorStream();
+            String errorResponse = "";
+            if (errorStream != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(errorStream))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse += line;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.err.println("Error response: " + errorResponse);
             return "failed";
         }
     }

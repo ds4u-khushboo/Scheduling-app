@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-public class SlotController {
+public class HealowDevController {
 
     @Autowired
     private BookingInfoRespository bookingInfoRespository;

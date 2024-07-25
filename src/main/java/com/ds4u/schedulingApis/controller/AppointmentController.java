@@ -14,7 +14,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +34,13 @@ import java.util.concurrent.TimeUnit;
 public class AppointmentController {
 
     @Autowired
-   private ApiDevConfig apiDevConfig;
+    private ApiDevConfig apiDevConfig;
 
     @Bean
-    public ApiDevConfig apiConfig(){
+    public ApiDevConfig apiConfig() {
         return new ApiDevConfig();
     }
+
     OkHttpClient client;
 
     @Autowired
@@ -125,7 +128,7 @@ public class AppointmentController {
         System.out.println("jsonBody::: " + jsonBody);
 
         Request request = new Request.Builder()
-                .url(bookUrl).post(okhttp3.RequestBody.create(jsonBody,MediaType.get("application/json+fhir")))
+                .url(bookUrl).post(okhttp3.RequestBody.create(jsonBody, MediaType.get("application/json+fhir")))
 //                .post(requestBody.put(jsonBody, String.valueOf(MediaType.get("application/json+fhir"))))
                 .addHeader("Authorization", "Bearer " + apiDevConfig.getDevBearerToekn())
                 //.addHeader("Content-Type", "application/json+fhir")
@@ -160,12 +163,12 @@ public class AppointmentController {
 
     @RequestMapping(value = "/providersList", method = RequestMethod.GET)
     public HashMap<String, List<String>> getProviders(@RequestParam String speciality) {
-        return appointmentService.getProviders(speciality);
+        return appointmentService.getProvidersFromFile(speciality);
     }
 
     @RequestMapping(value = "/providers", method = RequestMethod.GET)
-    public List<Provider> getProvidersBySpeciality(@RequestParam String speciality) {
-        return appointmentService.getProvidersList(speciality);
+    public List<Provider> getProvidersBySpeciality(@RequestParam @NotNull String speciality, @RequestParam(required = false) String providerName) {
+        return appointmentService.getProvidersList(speciality, providerName);
     }
 
     private PatientInfo mapToPatientInfo(PatientInfo request) {
@@ -177,23 +180,11 @@ public class AppointmentController {
         return patientInfo;
     }
 
-//    private BookingInfo mapToBookingInfo(BookingInfo request) {
-//        BookingInfo bookingInfo = new BookingInfo();
-//        bookingInfo.setSlotStartDateTime(request.getSlotStartDateTime());
-//        bookingInfo.setSlotEndDateTime(request.getSlotEndDateTime());
-//
-//        return bookingInfo;
-//    }
-
 
     @RequestMapping(value = "/patientByProvider", method = RequestMethod.GET)
     public void getTimeSlotsByProvider(@RequestParam Long provider) {
         appointmentService.getPatientList(provider);
     }
 
-//    @RequestMapping(value = "/get", method = RequestMethod.GET)
-//
-//    public Appointment getAppointment(@RequestParam String ProviderId) {
-//        return appointmentService.getAppoinment(ProviderId);
-//    }
+
 }

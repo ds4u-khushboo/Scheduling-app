@@ -1,14 +1,8 @@
 package com.ds4u.schedulingApis.entity;
 
-import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
-import ca.uhn.fhir.model.dstu2.composite.HumanNameDt;
-import ca.uhn.fhir.model.dstu2.valueset.AdministrativeGenderEnum;
-import ca.uhn.fhir.model.primitive.BoundCodeDt;
-import ca.uhn.fhir.model.primitive.DateDt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,21 +24,26 @@ public class BookingInfo {
     @Column(name = "birthDate")
     private String birthDate;
 
-    private String resourceType;
+    @Column(name = "address")
+    private String address;
 
-    public String getResourceType() {
-        return resourceType;
-    }
+    @Column(name = "city")
+    private String city;
+    @Column(name = "state")
+    private String state;
+    @Column(name = "postal_code")
+    private String postalCode;
 
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
+    @Column(name = "country")
+    private String country;
+
 
     @Column(name = "sex")
     private String sex;
 
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
 
     @Column(name = "email" )
     private String email;
@@ -69,6 +68,46 @@ public class BookingInfo {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void setFirstName(String firstName) {

@@ -216,7 +216,7 @@ public class AppointmentService {
         return "Appointment booked successfully!";
     }
 
-    public HashMap<String, List<String>> getProviders(String speciality) {
+    public HashMap<String, List<String>> getProvidersFromFile(String speciality) {
         List<String> providers = new ArrayList<>();
 
 
@@ -241,15 +241,15 @@ public class AppointmentService {
 
     }
 
-    public List<Provider> getProvidersList(String speciality) {
-        List<String> providers = new ArrayList<>();
+    public List<Provider> getProvidersList(String speciality, String providerName) {
+        List<Provider> providers = new ArrayList<>();
+        if (speciality != null && providerName != null) {
+            providers = providerRepository.findBySpecialtyAndName(speciality, providerName);
+        } else {
+            providers = providerRepository.findBySpecialty(speciality);
+        }
 
-//        HashMap<String, List<String>> map = new HashMap<>();
-//        Optional<Insurance> insurance = insuranceRepository.findById(InsuranceId);
-
-        List<Provider> provider = providerRepository.findBySpecialty(speciality);
-        System.out.println("provider::::" + provider);
-        return provider;
+        return providers;
     }
 
     public List<PatientInfo> getPatientList(Long id) {

@@ -8,10 +8,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 public class BookController {
@@ -267,48 +270,48 @@ public class BookController {
     }
 
     @PostMapping("/api/book/appointment")
-    public void bookAppointment(@RequestBody BookingInfo bookingInfo) {
+    public String bookAppointment(@RequestBody BookingInfo bookingInfo) {
         try {
             String baseUrl = "https://azuhealow-preprod.healow.com/apps/api/v1/fhir/IFDECD/dstu2/v2/Appointment";
             URL url = new URL(baseUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json+fhir");
-            conn.setRequestProperty("Authorization", "Bearer " + "AA1.W4QVB2DN3QsEwi03tTVtYLYxUtmWQY2SC1y2wAhGMlQzLbJZ9085fRxOX-1R6V9nX2sOMl7DmH_eN-neYuxJSx-m2Q66D-MJvfF4vn2vPlxmT30lZjS8rePHDAhRc8VfmwBTSF8et_EvV6Bwyq7Jw4rlrkJf5LBZR2nZYNKS_HzgnmhAIzzNm3kJ86rKriNE"); // Replace with your actual token
+            conn.setRequestProperty("Authorization", "Bearer " + "AA1.W4QVB2DN3QsEwi03tTVtYLYxUtmWQY2SC1y2wAhGMlQzLbJZ9085fRxOX-1R6V9nX2sOMl7DmH_eN-neYuxJSx-m2Q66D-MJvfF4vn2vPlxmT30lZjS8rePHDAhRc8VfmwBTSF8et_EvV6Bwyq7Jw4rlrkJf5LBZR2nZYNKS_HzgnmhAIzzNm3kJ86rKriNE");
             conn.setDoOutput(true);
 
-//             Example JSON structure for booking appointment
+            // Construct JSON payload
             String jsonInputString = "{\n" +
                     "    \"resourceType\": \"Appointment\",\n" +
                     "    \"contained\": [\n" +
                     "        {\n" +
                     "            \"resourceType\": \"Patient\",\n" +
-                    "            \"id\": \"patA\",\n" +
+                    "             \"id\": \"patA\",\n"+
                     "            \"name\": [\n" +
                     "                {\n" +
                     "                    \"use\": \"usual\",\n" +
                     "                    \"family\": [\n" +
-                    "                        \"testfamily\"\n" +
+                    "                        \"" + bookingInfo.getLastName() + "\"\n" +
                     "                    ],\n" +
                     "                    \"given\": [\n" +
-                    "                        \"testgiven\"\n" +
+                    "                        \"" + bookingInfo.getFirstName() + "\"\n" +
                     "                    ]\n" +
                     "                }\n" +
                     "            ],\n" +
                     "            \"telecom\": [\n" +
                     "                {\n" +
                     "                    \"system\": \"phone\",\n" +
-                    "                    \"value\": \"0000000000\",\n" +
+                    "                    \"value\": \"" + bookingInfo.getPhoneNumber() + "\",\n" +
                     "                    \"use\": \"mobile\"\n" +
                     "                },\n" +
                     "                {\n" +
                     "                    \"system\": \"email\",\n" +
-                    "                    \"value\": \"test@example.com\",\n" +
+                    "                    \"value\": \"" + bookingInfo.getEmail() + "\",\n" +
                     "                    \"use\": \"home\"\n" +
                     "                }\n" +
                     "            ],\n" +
-                    "            \"gender\": \"male\",\n" +
-                    "            \"birthDate\": \"1970-01-01\",\n" +
+                    "            \"gender\": \"" + bookingInfo.getSex() + "\",\n" +
+                    "            \"birthDate\": \"" + bookingInfo.getBirthDate() + "\",\n" +
                     "            \"address\": [\n" +
                     "                {\n" +
                     "                    \"use\": \"home\",\n" +
@@ -342,15 +345,15 @@ public class BookController {
                     "    \"id\": \"\",\n" +
                     "    \"status\": \"proposed\",\n" +
                     "    \"reason\": {\n" +
-                    "        \"text\": \"The reason that this appointment is being scheduled. (e.g. Regular checkup)\"\n" +
+                    "        \"text\": \"Regular checkup\"\n" +
                     "    },\n" +
-                    "    \"description\": \"The brief description of the appointment as would be shown on a subject line in a meeting request, or appointment list.\",\n" +
+                    "    \"description\": \"Appointment description\",\n" +
                     "    \"slot\": [\n" +
                     "        {\n" +
                     "            \"reference\": \"a02365f3-8970-4c80-9056-84e6bda97fdf\"\n" +
                     "        }\n" +
                     "    ],\n" +
-                    "    \"comment\": \"Additional comments about the appointment.\",\n" +
+                    "    \"comment\": \"Additional comments\",\n" +
                     "    \"participant\": [\n" +
                     "        {\n" +
                     "            \"actor\": {\n" +
@@ -367,24 +370,33 @@ public class BookController {
                     "    ]\n" +
                     "}";
 
-            //     String jsonInputString=constructAppointmentJson(bookingInfo);
             try (OutputStream os = conn.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
 
             int responseCode = conn.getResponseCode();
-            System.out.println("HTTP Response Code: " + responseCode);
+//            System.out.println("HTTP Response Code: " + responseCode);
 
             if (responseCode == HttpURLConnection.HTTP_CREATED) {
                 bookingInfoRespository.save(bookingInfo);
-                System.out.println("BookingInfo saved to database");
+                return "BookingInfo saved to database";
+            } else {
+                // Print error response
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+                    return responseCode +response.toString();
+                }
             }
 
-            conn.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "success";
     }
 
     @PostMapping("/book/appointment")
