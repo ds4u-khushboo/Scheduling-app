@@ -10,4 +10,5 @@ public interface PatientInfoRepository extends JpaRepository<PatientInfo,Long> {
 
     List<PatientInfo> findByProvider(String provider);
 
+
 }

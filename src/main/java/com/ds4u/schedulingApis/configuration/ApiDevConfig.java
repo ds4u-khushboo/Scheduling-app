@@ -22,7 +22,6 @@ public class ApiDevConfig {
     @Value("${api_dev_bearer_token}")
     private String devBearerToekn;
 
-
     @Value("${actor_npi_dev}")
     private String actorDevNpi;
 

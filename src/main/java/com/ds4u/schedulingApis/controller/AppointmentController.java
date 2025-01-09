@@ -180,7 +180,6 @@ public class AppointmentController {
         return patientInfo;
     }
 
-
     @RequestMapping(value = "/patientByProvider", method = RequestMethod.GET)
     public void getTimeSlotsByProvider(@RequestParam Long provider) {
         appointmentService.getPatientList(provider);

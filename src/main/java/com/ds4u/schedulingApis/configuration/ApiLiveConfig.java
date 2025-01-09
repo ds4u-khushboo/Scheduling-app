@@ -15,6 +15,9 @@ public class ApiLiveConfig {
     @Value("${api_slot_live_url}")
     private String slotLiveUrl;
 
+    @Value("${api_book_live_url}")
+    private String liveBookUrl;
+
     @Value("${api_live_bearer_token}")
     private String apiLiveBearerToken;
 
@@ -34,6 +37,14 @@ public class ApiLiveConfig {
 
     public String getSlotLiveUrl() {
         return slotLiveUrl;
+    }
+
+    public String getLiveBookUrl() {
+        return liveBookUrl;
+    }
+
+    public void setLiveBookUrl(String liveBookUrl) {
+        this.liveBookUrl = liveBookUrl;
     }
 
     public void setSlotLiveUrl(String slotLiveUrl) {

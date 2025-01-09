@@ -1,12 +1,11 @@
 package com.ds4u.schedulingApis.controller;
 
+import com.ds4u.schedulingApis.entity.BookingInfo;
 import com.ds4u.schedulingApis.respository.BookingInfoRespository;
 import com.ds4u.schedulingApis.service.HealowDevService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -32,9 +31,14 @@ public class HealowDevController {
     @GetMapping("/apicombineschedule")
     public JsonNode getSchedule(@RequestParam String actor, String date, String identifier, String type, String location, String slotType, String start, int count) throws IOException {
 
-            return healowDevService.getSchedules(actor, date, identifier, type, location, slotType, start, count);
-        }
+        return healowDevService.getSchedules(actor, date, identifier, type, location, slotType, start, count);
     }
+
+    @PostMapping("/bookapp/dev")
+    public JsonNode getSchedule(@RequestBody BookingInfo bookingInfo) throws IOException {
+        return healowDevService.bookAppointmentDev(bookingInfo);
+    }
+}
 
 //
 //    @PostMapping("/bookapi")

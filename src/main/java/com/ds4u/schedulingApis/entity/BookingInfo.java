@@ -15,6 +15,8 @@ public class BookingInfo {
     @Column(name = "bookingFor")
     private String bookingFor;
 
+    @Column(name = "insurance_id")
+    private String insuranceId;
     @Column(name = "firstName")
     private String firstName;
 
@@ -37,9 +39,14 @@ public class BookingInfo {
     @Column(name = "country")
     private String country;
 
+    @Column(name = "slot_id")
+    private String slotId;
 
     @Column(name = "sex")
     private String sex;
+
+    @Column(name = "reason")
+    private String reason;
 
     @Column(name = "phoneNumber")
     private String phoneNumber;
@@ -60,6 +67,22 @@ public class BookingInfo {
 
     public String getBookingFor() {
         return bookingFor;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public String getInsuranceId() {
+        return insuranceId;
+    }
+
+    public void setInsuranceId(String insuranceId) {
+        this.insuranceId = insuranceId;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public void setBookingFor(String bookingFor) {
@@ -84,6 +107,14 @@ public class BookingInfo {
 
     public String getState() {
         return state;
+    }
+
+    public String getSlotId() {
+        return slotId;
+    }
+
+    public void setSlotId(String slotId) {
+        this.slotId = slotId;
     }
 
     public void setState(String state) {

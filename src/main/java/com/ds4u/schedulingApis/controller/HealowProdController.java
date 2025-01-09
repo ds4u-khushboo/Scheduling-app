@@ -1,5 +1,6 @@
 package com.ds4u.schedulingApis.controller;
 
+import com.ds4u.schedulingApis.entity.BookingInfo;
 import com.ds4u.schedulingApis.response.ResultResponse;
 import com.ds4u.schedulingApis.service.ECWProdService;
 import com.ds4u.schedulingApis.service.HealowProdService;
@@ -45,6 +46,11 @@ public class HealowProdController {
     public JsonNode getSchedule(@RequestParam String actor, String date, String identifier, String type, String location, String slotType, String start, int count) throws IOException {
 
         return healowProdService.getSchedules(actor, date, identifier, type, location, slotType, start, count);
+    }
+
+    @PostMapping("/prod/bookAppointment")
+    public JsonNode bookAppointmentProd(@RequestBody BookingInfo bookingInfo) throws IOException {
+     return healowProdService.bookAppointmentLive(bookingInfo);
     }
 }
 
