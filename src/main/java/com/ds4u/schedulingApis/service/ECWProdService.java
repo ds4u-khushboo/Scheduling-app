@@ -26,7 +26,6 @@ public class ECWProdService {
 
     public ResultResponse getCombinedResponse(String actor, String date, String location, String slotType, String start, int count) {
         try {
-            // Build URL for Schedule API
             String scheduleUrl = UriComponentsBuilder.fromHttpUrl(apiDevConfig.getApiScheduleDevUrl())
                     .queryParam("actor", actor)
                     .queryParam("date", date)
@@ -50,10 +49,8 @@ public class ECWProdService {
 
             ScheduleResponse scheduleResponse = scheduleResponseEntity.getBody();
 
-            // Extract schedule ID from the Schedule API response
             String scheduleId = scheduleResponse.getEntry().get(0).getResource().getId();
 
-            // Build URL for Slot API
             String slotUrl = UriComponentsBuilder.fromHttpUrl(apiDevConfig.getApiSlotDevUrl())
                     .queryParam("schedule", scheduleId)
                     .queryParam("slot-type", slotType)
@@ -61,20 +58,17 @@ public class ECWProdService {
                     .queryParam("_count", count)
                     .toUriString();
 
-            // Make request to Slot API
             ResponseEntity<SlotResponse> slotResponseEntity = restTemplate.getForEntity(
                     slotUrl,
                     SlotResponse.class,entity
             );
 
-            // Check if Slot API returned successfully
             if (!slotResponseEntity.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Failed to retrieve Slot data. Status code: " + slotResponseEntity.getStatusCodeValue());
             }
 
             SlotResponse slotResponse = slotResponseEntity.getBody();
 
-            // Combine responses into ResultResponse
             ResultResponse combinedResponse = new ResultResponse();
             combinedResponse.setScheduleResponse(scheduleResponse);
             combinedResponse.setSlotResponse(slotResponse);
@@ -82,11 +76,9 @@ public class ECWProdService {
             return combinedResponse;
 
         } catch (HttpClientErrorException.Unauthorized e) {
-            // Handle Unauthorized (401) error
             System.out.println("401 Unauthorized error occurred: " + e.getMessage());
-            throw e; // Rethrow the exception or handle as appropriate
+            throw e;
         } catch (Exception e) {
-            // Handle other exceptions
             System.out.println("Error occurred: " + e.getMessage());
             throw new RuntimeException("Failed to retrieve data from APIs", e);
         }

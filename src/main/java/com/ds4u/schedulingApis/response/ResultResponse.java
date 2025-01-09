@@ -4,8 +4,6 @@ public class ResultResponse {
         private ScheduleResponse scheduleResponse;
         private SlotResponse slotResponse;
 
-        // Getters and setters
-
     public ScheduleResponse getScheduleResponse() {
         return scheduleResponse;
     }

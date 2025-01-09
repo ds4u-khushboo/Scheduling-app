@@ -1,7 +1,6 @@
 package com.ds4u.schedulingApis.controller;
 
 import com.ds4u.schedulingApis.entity.BookingInfo;
-import com.ds4u.schedulingApis.respository.BookingInfoRespository;
 import com.ds4u.schedulingApis.service.HealowDevService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import java.io.IOException;
 @RestController
 public class HealowDevController {
 
-    @Autowired
-    private BookingInfoRespository bookingInfoRespository;
 
     @Autowired
     private HealowDevService healowDevService;

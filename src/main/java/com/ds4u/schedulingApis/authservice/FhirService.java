@@ -36,7 +36,6 @@ public class FhirService {
 
     protected ObjectMapper objectMapper = new ObjectMapper();
 
-//    private final ExecutorService executorService;
 
     private OkHttpClient clients = new OkHttpClient.Builder().build();
 

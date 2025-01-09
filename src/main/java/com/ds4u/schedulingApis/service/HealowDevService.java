@@ -42,7 +42,6 @@ public class HealowDevService {
                 .url(url)
                 .get()
                 .addHeader("Authorization", "Bearer " + apiDevConfig.getDevBearerToekn())
-                // .addHeader("Cookie", "JSESSIONID=78C5A71D81FA9FF3F943D799C9923F0F; ApplicationGatewayAffinity=cef1f429a0207a8fd583686fb86a5ca3; ApplicationGatewayAffinityCORS=cef1f429a0207a8fd583686fb86a5ca3; SERVERID=app02_8003")
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -52,7 +51,6 @@ public class HealowDevService {
 
             return response.body().string();
         } catch (IOException e) {
-            // Log the specific exception details
             System.err.println("IOException while executing FHIR request:");
             e.printStackTrace();
             throw e;
@@ -74,7 +72,6 @@ public class HealowDevService {
                 .url(sloturl)
                 .get()
                 .addHeader("Authorization", "Bearer " + apiDevConfig.getDevBearerToekn())
-                //.addHeader("Cookie", "JSESSIONID=78C5A71D81FA9FF3F943D799C9923F0F; ApplicationGatewayAffinity=cef1f429a0207a8fd583686fb86a5ca3; ApplicationGatewayAffinityCORS=cef1f429a0207a8fd583686fb86a5ca3; SERVERID=app02_8003")
                 .build();
         System.out.println("request--" + request);
         try (Response response = client.newCall(request).execute()) {
@@ -87,7 +84,6 @@ public class HealowDevService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode originalResponse = mapper.readTree(responseBody);
 
-            // Check if there are existing entries
             ArrayNode entries;
             if (originalResponse.has("entry")) {
                 entries = (ArrayNode) originalResponse.get("entry");
@@ -95,7 +91,6 @@ public class HealowDevService {
                 entries = mapper.createArrayNode();
             }
 
-            // Create the new entry
             ObjectNode newEntry = mapper.createObjectNode();
             newEntry.put("fullUrl", "http://connect4.healow.com/apps/api/v1/fhir/BEHDAD/fhir/Schedule/c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
 
@@ -193,7 +188,6 @@ public class HealowDevService {
                 entries = mapper.createArrayNode();
             }
 
-            // Create the new entry
             ObjectNode newEntry = mapper.createObjectNode();
             newEntry.put("fullUrl", "http://connect4.healow.com/apps/api/v1/fhir/BEHDAD/fhir/Schedule/c4554eb8-ee68-4a2c-bff3-eceddcf8ac8a");
 
@@ -214,32 +208,17 @@ public class HealowDevService {
 
             newEntry.set("resource", resource);
 
-            // Add the new entry to the entries array
             entries.add(newEntry);
 
-            // Update the original response with the new entries array and the other required fields
             ((ObjectNode) originalResponse).set("entry", entries);
             ((ObjectNode) originalResponse).put("total", entries.size());
 
-            // Return the updated response as a string
             String updatedResponseBody = mapper.writeValueAsString(originalResponse);
             System.out.println(updatedResponseBody);
-            //return updatedResponseBody;
             return objectMapper.readTree(updatedResponseBody);
         }
     }
-//    @CachePut(value = "schedules", key = "#root.methodName")
-//    public JsonNode prefetchAndCacheData() {
-//        // Fetch data from third-party API
-//        JsonNode data = client.();
-//        return data;
-//    }
-//
-//    @Cacheable(value = "schedules", key = "#root.methodName")
-//    public JsonNode getCachedData() {
-//        // This method will only be called if the cache is empty
-//        return prefetchAndCacheData();
-//    }
+
 
     private String extractScheduleId(String responseBody) throws JsonProcessingException {
         JsonNode root = objectMapper.readTree(responseBody);
@@ -251,7 +230,6 @@ public class HealowDevService {
         return null;
     }
 
-    //public String book(BookingInfo bookingInfo) throws IOException {
     public JsonNode bookAppointmentDev(BookingInfo bookingInfo) throws IOException {
         try {
             HttpUrl.Builder urlBuilder = HttpUrl.parse(apiDevConfig.getApiDevBookUrl()).newBuilder();

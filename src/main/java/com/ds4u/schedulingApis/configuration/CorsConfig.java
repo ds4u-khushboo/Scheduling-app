@@ -10,9 +10,9 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // Allow all origins
-                .allowedMethods("*") // Allow all HTTP methods
-                .allowedHeaders("*"); // Allow all headers
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("*");
         System.out.println("Cross origin allowed in !");
     }
 }

@@ -1,18 +1,10 @@
 package com.ds4u.schedulingApis.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ECWController {
 
-    private OkHttpClient client = new OkHttpClient.Builder().build();
-
-    String PracticeCode;
-
-    String schedule;
-    ObjectMapper objectMapper = new ObjectMapper();
 
 //    @RequestMapping(value = "/ecwSchedule", method = RequestMethod.GET)
 //    public String getSchedule() throws IOException {

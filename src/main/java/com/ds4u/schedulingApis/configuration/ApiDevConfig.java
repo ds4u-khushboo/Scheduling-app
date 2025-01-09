@@ -25,8 +25,6 @@ public class ApiDevConfig {
     @Value("${actor_npi_dev}")
     private String actorDevNpi;
 
-
-
     @Value("${actor_dev_location}")
     private String actorDevLocation;
 

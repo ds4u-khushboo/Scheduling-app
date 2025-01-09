@@ -14,9 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +40,6 @@ public class HealowProdService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    //    private final Cache<String, JsonNode> responseCache;
     @Autowired
     public void FhirApiClient(ApiLiveConfig apiLiveConfig) {
         this.client = new OkHttpClient.Builder()
@@ -70,7 +66,6 @@ public class HealowProdService {
                 .url(url)
                 .get()
                 .addHeader("Authorization", "Bearer " + apiLiveConfig.getApiLiveBearerToken())
-                // .addHeader("Cookie", "JSESSIONID=78C5A71D81FA9FF3F943D799C9923F0F; ApplicationGatewayAffinity=cef1f429a0207a8fd583686fb86a5ca3; ApplicationGatewayAffinityCORS=cef1f429a0207a8fd583686fb86a5ca3; SERVERID=app02_8003")
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -79,7 +74,6 @@ public class HealowProdService {
             }
             return response.body().string();
         } catch (IOException e) {
-            // Log the specific exception details
             System.err.println("IOException while executing FHIR request:");
             e.printStackTrace();
             throw e;
@@ -121,8 +115,6 @@ public class HealowProdService {
         }
     }
 
-    //    @Async
-//    @Cacheable
     @Scheduled(fixedRate = 3600)
     public JsonNode getSchedules(@RequestParam String actor, String date, String identifier, String type, String location, String slotType, String start, int count) throws IOException {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(apiLiveConfig.getApiScheduleLiveUrl()).newBuilder();
@@ -193,13 +185,11 @@ public class HealowProdService {
 
     @CachePut(value = "slots", key = "#date")
     public JsonNode prefetchAndCacheSlots(String actor, String date, String identifier, String type, String location, String start, String slotType, int count) throws IOException {
-        // Fetch slot data from third-party API
         return getSchedules(actor, date, identifier, type, location, start, slotType, count);
     }
 
     @Cacheable(value = "slots", key = "#date")
     public JsonNode getCachedSlots(String actor, String date, String identifier, String type, String location, String start, String slotType, int count) throws IOException {
-        // This method will only be called if the cache is empty
         return prefetchAndCacheSlots(actor, date, identifier, type, location, start, slotType, count);
     }
 
@@ -338,53 +328,5 @@ public class HealowProdService {
             throw new RuntimeException(ex);
         }
     }
-
-//    catch (IOException e) {
-//            e.printStackTrace();
-//            ObjectNode errorNode = objectMapper.createObjectNode();
-//            errorNode.put("error", "Error: " + e.getMessage());
-//            return errorNode;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            ObjectNode errorNode = objectMapper.createObjectNode();
-//            errorNode.put("error", "Error: " + e.getMessage());
-//            return errorNode;
-//        }
-//        String baseUrl = apiLiveConfig.getLiveBookUrl();
-//            URL url = new URL(urlBuilder);
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setRequestMethod("POST");
-//            conn.setRequestProperty("Content-Type", "application/json+fhir");
-//            conn.setRequestProperty("Authorization", "Bearer " + apiLiveConfig.getApiLiveBearerToken());
-//            conn.setDoOutput(true);
-//
-//            // Construct JSON payload
-//
-//            try (OutputStream os = conn.getOutputStream()) {
-//                byte[] input = jsonInputString.getBytes("utf-8");
-//                os.write(input, 0, input.length);
-//            }
-//
-//            int responseCode = conn.getResponseCode();
-//            if (responseCode == HttpURLConnection.HTTP_CREATED) {
-//                bookingInfoRespository.save(bookingInfo);
-//                return "BookingInfo saved to database";
-//            } else {
-//                // Print error response
-//                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
-//                    StringBuilder response = new StringBuilder();
-//                    String responseLine;
-//                    while ((responseLine = br.readLine()) != null) {
-//                        response.append(responseLine.trim());
-//                    }
-//                    return responseCode + response.toString();
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return "success";
-
 
 }

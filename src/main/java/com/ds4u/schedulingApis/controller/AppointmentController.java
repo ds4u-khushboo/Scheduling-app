@@ -40,7 +40,6 @@ public class AppointmentController {
     public ApiDevConfig apiConfig() {
         return new ApiDevConfig();
     }
-
     OkHttpClient client;
 
     @Autowired
@@ -89,10 +88,8 @@ public class AppointmentController {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Parse incoming JSON to extract required fields
         JsonNode scheduleNode = objectMapper.readTree(Appointment);
 
-        // Extract fields for database storage
         String firstName = scheduleNode.at("/contained/0/name/0/given/0").asText();
         String lastName = scheduleNode.at("/contained/0/name/0/family/0").asText();
         String birthDate = scheduleNode.at("/contained/0/birthDate").asText();
@@ -100,7 +97,6 @@ public class AppointmentController {
         String phoneNumber = scheduleNode.at("/contained/0/telecom/0/value").asText();
         String email = scheduleNode.at("/contained/0/telecom/1/value").asText();
 
-        // Create BookingInfo object
         BookingInfo bookingInfo = new BookingInfo();
         bookingInfo.setFirstName(firstName);
         bookingInfo.setLastName(lastName);
@@ -108,12 +104,9 @@ public class AppointmentController {
         bookingInfo.setSex(sex);
         bookingInfo.setPhoneNumber(phoneNumber);
         bookingInfo.setEmail(email);
-
-        // Save to database
         bookingInfoRespository.save(bookingInfo);
         saveBookingInfo(bookingInfo);
 
-        // Prepare JSON for third-party API
         ObjectNode requestBody = objectMapper.createObjectNode();
         requestBody.put("bookingFor", "myself");
         requestBody.put("firstName", firstName);
@@ -121,17 +114,13 @@ public class AppointmentController {
         // Add other fields as needed
 
         String jsonBody = objectMapper.writeValueAsString(requestBody);
-
-        // Build request to third-party API
         String bookUrl = apiDevConfig.getApiDevBookUrl();
         System.out.println("bookUrl::: " + bookUrl);
         System.out.println("jsonBody::: " + jsonBody);
 
         Request request = new Request.Builder()
                 .url(bookUrl).post(okhttp3.RequestBody.create(jsonBody, MediaType.get("application/json+fhir")))
-//                .post(requestBody.put(jsonBody, String.valueOf(MediaType.get("application/json+fhir"))))
                 .addHeader("Authorization", "Bearer " + apiDevConfig.getDevBearerToekn())
-                //.addHeader("Content-Type", "application/json+fhir")
                 .build();
 
         // Print request details for debugging
@@ -147,7 +136,6 @@ public class AppointmentController {
             System.out.println("response::: " + response);
             String jsonResponse = response.body().string();
 
-            // Handle response from third-party API as needed
             return jsonResponse;
         } catch (IOException e) {
             System.err.println("IOException while executing request:");
@@ -169,15 +157,6 @@ public class AppointmentController {
     @RequestMapping(value = "/providers", method = RequestMethod.GET)
     public List<Provider> getProvidersBySpeciality(@RequestParam @NotNull String speciality, @RequestParam(required = false) String providerName) {
         return appointmentService.getProvidersList(speciality, providerName);
-    }
-
-    private PatientInfo mapToPatientInfo(PatientInfo request) {
-        PatientInfo patientInfo = new PatientInfo();
-        patientInfo.setFirstName(request.getFirstName());
-        patientInfo.setLastName(request.getLastName());
-        patientInfo.setAddressLine1(request.getAddressLine1());
-
-        return patientInfo;
     }
 
     @RequestMapping(value = "/patientByProvider", method = RequestMethod.GET)

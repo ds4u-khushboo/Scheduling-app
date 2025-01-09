@@ -29,12 +29,8 @@ public class PrefetchConfiguration {
         String location= apiLiveConfig.getActorLiveLocation();
         String start=date;
         String slotType="api1";
-//        String star
-        // Define scheduleId, slotType, start, and count parameters for prefetching
-   //     String scheduleId = "exampleScheduleId"; // Replace with actual schedule ID
-       // String slotType = apiLiveConfig.    // Replace with actual slot type
-    //    String start = "exampleStart";           // Replace with actual start
-        int count = 10;                          // Replace with actual count
+
+        int count = 10;
 
         slotService.prefetchAndCacheSlots(actor, date,identifier, type, location, start, slotType, count);
     }

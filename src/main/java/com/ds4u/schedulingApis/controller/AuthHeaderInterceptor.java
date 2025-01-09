@@ -12,7 +12,6 @@ public class AuthHeaderInterceptor implements IClientInterceptor {
     private final String authToken;
 
     public AuthHeaderInterceptor() {
-        // You might want to get this token from a secure place or an environment variable
         this.authToken = "Bearer AA1.W4QVB2DN3QsEwi03tTVtYLYxUtmWQY2SC1y2wAhGMlQzLbJZ9085fRxOX-1R6V9nX2sOMl7DmH_eN-neYuxJSx-m2Q66D-MJvfF4vn2vPlxmT30lZjS8rePHDAhRc8VfmwBTSF8et_EvV6Bwyq7Jw4rlrkJf5LBZR2nZYNKS_HzgnmhAIzzNm3kJ86rKriNE";
     }
 
@@ -28,6 +27,5 @@ public class AuthHeaderInterceptor implements IClientInterceptor {
 
     @Override
     public void interceptResponse(IHttpResponse theResponse) {
-        // No-op
     }
 }

@@ -97,10 +97,7 @@ public class AppointmentService {
 //        }
 //        return slots;
 //    }
-        List<Slot> slots = new ArrayList<>();
         Map<String, List<Slot>> slotsMap = new HashMap<>();
-//        LocalDate start = LocalDate.parse(startDate, DATE_FORMATTER);
-//        LocalDate end = start.plusDays(6); // Calculate end date as start date + 6 days
 
         List<String> lines = Files.readAllLines(Paths.get("src/main/resources/slot.txt"));
 
@@ -207,11 +204,6 @@ public class AppointmentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // Set patientInfo in bookingInfo
-//        bookingInfo.setPatientInfo(savedPatient);
-//
-//        // Save booking information
-//        bookingInfoRespository.save(bookingInfo);
 
         return "Appointment booked successfully!";
     }
@@ -262,9 +254,6 @@ public class AppointmentService {
         String name = provider.getName();
         List<PatientInfo> patientInfo = patientInfoRepository.findByProvider(name);
 
-//            if(name==patientInfo.)
-//            System.out.println("patientInfo"+patientInfo);
-//        }
         return patientInfo;
     }
 
